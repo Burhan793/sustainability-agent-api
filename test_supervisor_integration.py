@@ -329,8 +329,8 @@ def main():
         print("INTEGRATION READY")
         print("="*60)
         print("\nAgent Endpoints:")
-        print(f"  Main: http://localhost:8000/sustainability-footprint-agent")
-        print(f"  Health: http://localhost:8000/health")
+        print(f"  Main: http://localhost:8000/api/sustainability-footprint-agent")
+        print(f"  Health: http://localhost:8000/api/sustainability-footprint-agent/health")
         print("\nYou can now integrate this agent with the supervisor!")
         print("="*60)
 

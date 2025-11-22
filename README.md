@@ -1,18 +1,18 @@
-# Sustainability Footprint Agent
+# Community Safety Agent
 
-A specialized AI agent for environmental impact analysis, carbon footprint calculations, and sustainability assessment as part of a Multi-Agent System.
+A specialized AI agent for community safety analysis, environmental impact analysis, carbon footprint calculations, and sustainability assessment as part of a Multi-Agent System.
 
 ## 🚀 Quick Deploy
 
 **Your agent is ready to deploy to the cloud!** See [CLOUD_DEPLOYMENT.md](CLOUD_DEPLOYMENT.md) for step-by-step instructions.
 
 **API Endpoints:**
-- Local: `http://localhost:8000/api/sustainability-footprint-agent`
-- Production: `https://<your-domain>/api/sustainability-footprint-agent`
+- Local: `http://localhost:8000/api/community-safety-agent`
+- Production: `https://<your-domain>/api/community-safety-agent`
 
 ## 🌍 Overview
 
-The Sustainability Footprint Agent provides intelligent analysis and recommendations for:
+The Community Safety Agent provides intelligent analysis and recommendations for:
 - **Carbon Footprint Analysis**: Calculate and reduce CO2 emissions
 - **Energy Consumption Tracking**: Monitor and optimize energy usage
 - **Waste Management Assessment**: Evaluate recycling and waste reduction
@@ -97,21 +97,21 @@ The agent will start on `http://localhost:8000`
 
 ### 1. Health Check
 ```
-GET /api/sustainability-footprint-agent/health
+GET /api/community-safety-agent/health
 ```
 
 **Response:**
 ```json
 {
   "status": "ok",
-  "agent_name": "sustainability-footprint-agent",
+  "agent_name": "community-safety-agent",
   "ready": true
 }
 ```
 
 ### 2. Main Agent Endpoint
 ```
-POST /api/sustainability-footprint-agent
+POST /api/community-safety-agent
 ```
 
 **Request Format:**
@@ -129,7 +129,7 @@ POST /api/sustainability-footprint-agent
 **Response Format:**
 ```json
 {
-  "agent_name": "sustainability-footprint-agent",
+  "agent_name": "community-safety-agent",
   "status": "success",
   "data": {
     "message": "Your analysis results...",
@@ -157,7 +157,7 @@ Returns agent metadata including intents and capabilities.
 curl http://localhost:8000/api/sustainability-footprint-agent/health
 
 # Send a query
-curl -X POST http://localhost:8000/api/sustainability-footprint-agent `
+curl -X POST http://localhost:8000/api/community-safety-agent `
   -H "Content-Type: application/json" `
   -d '{\"messages\": [{\"role\": \"user\", \"content\": \"How can I reduce my carbon footprint?\"}]}'
 ```
@@ -167,12 +167,12 @@ curl -X POST http://localhost:8000/api/sustainability-footprint-agent `
 import requests
 
 # Health check
-response = requests.get("http://localhost:8000/api/sustainability-footprint-agent/health")
+response = requests.get("http://localhost:8000/api/community-safety-agent/health")
 print(response.json())
 
 # Send a query
 response = requests.post(
-    "http://localhost:8000/api/sustainability-footprint-agent",
+    "http://localhost:8000/api/community-safety-agent",
     json={
         "messages": [
             {"role": "user", "content": "What are the benefits of solar panels?"}
@@ -201,7 +201,7 @@ The agent implements intelligent caching:
 - Tracks access counts and timestamps
 - Automatically manages cache storage
 
-LTM files are stored in: `shared/LTM/sustainability-footprint-agent/`
+LTM files are stored in: `shared/LTM/community-safety-agent/`
 
 ## ⚙️ Configuration
 
@@ -222,8 +222,8 @@ The agent is designed to work within a multi-agent system:
 1. **Registry Entry** (for supervisor):
 ```json
 {
-  "name": "sustainability-footprint-agent",
-  "url": "http://your-ip:8000/sustainability-footprint-agent",
+  "name": "community-safety-agent",
+  "url": "http://your-ip:8000/api/community-safety-agent",
   "health_url": "http://your-ip:8000/health",
   "intents": ["carbon_footprint_analysis", "energy_consumption_tracking", ...]
 }
