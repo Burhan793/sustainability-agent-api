@@ -1,0 +1,31 @@
+{
+  "sustainability-footprint-agent": {
+    "name": "sustainability-footprint-agent",
+    "display_name": "Sustainability Footprint Agent",
+    "description": "AI agent specialized in environmental impact analysis, carbon footprint calculations, energy efficiency, and sustainability metrics",
+    "url": "http://localhost:8000/sustainability-footprint-agent",
+    "health_url": "http://localhost:8000/health",
+    "intents": [
+      "carbon_footprint_analysis",
+      "energy_consumption_tracking",
+      "waste_management_assessment",
+      "sustainability_metrics",
+      "environmental_impact_analysis",
+      "green_building_assessment",
+      "renewable_energy_recommendations"
+    ],
+    "priority": 2,
+    "timeout": 25,
+    "enabled": true,
+    "capabilities": [
+      "Carbon footprint calculation",
+      "Energy consumption analysis",
+      "Waste management assessment",
+      "Renewable energy recommendations",
+      "Sustainability reporting",
+      "Environmental impact evaluation",
+      "Green building certification guidance"
+    ],
+    "version": "1.0.0"
+  }
+}

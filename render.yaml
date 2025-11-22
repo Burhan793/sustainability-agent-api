@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: sustainability-footprint-agent
+    env: docker
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: PORT
+        value: 8000
+      - key: OPENAI_API_KEY
+        sync: false
+    healthCheckPath: /api/sustainability-footprint-agent/health
+    autoDeploy: true

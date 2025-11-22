@@ -1,0 +1,22 @@
+{
+  "name": "sustainability-footprint-agent",
+  "version": "1.0.0",
+  "description": "AI Agent for environmental impact analysis and sustainability assessment",
+  "main": "main.py",
+  "scripts": {
+    "start": "python main.py",
+    "dev": "uvicorn api:app --reload --host 0.0.0.0 --port 8000",
+    "test": "python test_agent.py",
+    "test:integration": "python test_supervisor_integration.py"
+  },
+  "engines": {
+    "python": "3.13.x"
+  },
+  "keywords": [
+    "sustainability",
+    "ai-agent",
+    "environmental-analysis",
+    "carbon-footprint",
+    "fastapi"
+  ]
+}

@@ -1,0 +1,183 @@
+{
+  "info": {
+    "name": "Sustainability Footprint Agent",
+    "description": "API collection for testing the Sustainability Footprint Agent",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8000/health",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8000",
+          "path": ["health"]
+        },
+        "description": "Check if the agent is running and healthy"
+      }
+    },
+    {
+      "name": "Agent Info",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8000/",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8000",
+          "path": [""]
+        },
+        "description": "Get agent information including intents and capabilities"
+      }
+    },
+    {
+      "name": "Carbon Footprint Query",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"messages\": [\n    {\n      \"role\": \"user\",\n      \"content\": \"What is the carbon footprint of driving 100 miles?\"\n    }\n  ]\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8000/sustainability-footprint-agent",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8000",
+          "path": ["sustainability-footprint-agent"]
+        },
+        "description": "Query about carbon footprint analysis"
+      }
+    },
+    {
+      "name": "Energy Consumption Query",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"messages\": [\n    {\n      \"role\": \"user\",\n      \"content\": \"How can I reduce my energy consumption at home?\"\n    }\n  ]\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8000/sustainability-footprint-agent",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8000",
+          "path": ["sustainability-footprint-agent"]
+        },
+        "description": "Query about energy consumption and efficiency"
+      }
+    },
+    {
+      "name": "Solar Panels Query",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"messages\": [\n    {\n      \"role\": \"user\",\n      \"content\": \"What are the benefits and ROI of installing solar panels?\"\n    }\n  ]\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8000/sustainability-footprint-agent",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8000",
+          "path": ["sustainability-footprint-agent"]
+        },
+        "description": "Query about renewable energy"
+      }
+    },
+    {
+      "name": "Waste Management Query",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"messages\": [\n    {\n      \"role\": \"user\",\n      \"content\": \"How can I implement better waste management in my office?\"\n    }\n  ]\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8000/sustainability-footprint-agent",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8000",
+          "path": ["sustainability-footprint-agent"]
+        },
+        "description": "Query about waste management"
+      }
+    },
+    {
+      "name": "Multi-Turn Conversation",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"messages\": [\n    {\n      \"role\": \"assistant\",\n      \"content\": \"Hello! How can I help you with sustainability today?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"I want to reduce my carbon footprint.\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"Great! What area would you like to focus on first?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Transportation and commuting.\"\n    }\n  ]\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8000/sustainability-footprint-agent",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8000",
+          "path": ["sustainability-footprint-agent"]
+        },
+        "description": "Example of multi-turn conversation with context"
+      }
+    },
+    {
+      "name": "Error Handling Test",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"messages\": []\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8000/sustainability-footprint-agent",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8000",
+          "path": ["sustainability-footprint-agent"]
+        },
+        "description": "Test error handling with empty messages"
+      }
+    }
+  ]
+}
