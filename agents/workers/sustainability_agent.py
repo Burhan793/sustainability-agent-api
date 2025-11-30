@@ -38,10 +38,10 @@ class SustainabilityFootprintAgent(AbstractWorkerAgent):
         )
         self.ltm = LTMStorage(ltm_path)
         
-        # Initialize Groq API (free and fast alternative to OpenAI)
-        self.api_key = api_key or os.getenv("GROQ_API_KEY") or "gsk_T9xB8zVvYQqKH9fJ3zW0WGdyb3FYXkLmN2pR4tS5vU6wX7yZ8"  # Free demo key
-        self.groq_url = "https://api.groq.com/openai/v1/chat/completions"
-        print(f"[{self._id}] Using Groq API with Llama 3 model")
+        # Initialize AI model API (using free HuggingFace Inference API - no key needed)
+        self.api_url = "https://api-inference.huggingface.co/models/meta-llama/Llama-3.2-3B-Instruct"
+        self.use_ai = True
+        print(f"[{self._id}] Using HuggingFace Llama 3.2 model (free, no API key needed)")
         
         # System prompt for sustainability analysis
         self.system_prompt = """You are a Sustainability Footprint Agent, an expert AI assistant specializing in environmental impact analysis, carbon footprint calculations, energy efficiency, waste management, and sustainability metrics.
@@ -114,40 +114,47 @@ Keep responses concise but informative, focusing on practical sustainability sol
         Returns:
             Analysis response
         """
+        if not self.use_ai:
+            return self._rule_based_response(query)
+            
         try:
-            # Prepare messages for Groq API
-            conversation = [{"role": "system", "content": self.system_prompt}]
+            # Build prompt with conversation context
+            prompt = f"{self.system_prompt}\n\n"
             
             if messages:
                 for msg in messages:
-                    conversation.append({
-                        "role": msg.get("role", "user"),
-                        "content": msg.get("content", "")
-                    })
-            else:
-                conversation.append({"role": "user", "content": query})
+                    role = msg.get("role", "user")
+                    content = msg.get("content", "")
+                    prompt += f"{role.capitalize()}: {content}\n"
             
-            # Call Groq API with Llama 3.1
-            headers = {
-                "Authorization": f"Bearer {self.api_key}",
-                "Content-Type": "application/json"
-            }
+            prompt += f"User: {query}\nAssistant:"
             
+            # Call HuggingFace Inference API (free, no auth required)
+            headers = {"Content-Type": "application/json"}
             payload = {
-                "model": "llama-3.1-70b-versatile",
-                "messages": conversation,
-                "temperature": 0.8,
-                "max_tokens": 800
+                "inputs": prompt,
+                "parameters": {
+                    "max_new_tokens": 500,
+                    "temperature": 0.7,
+                    "top_p": 0.9,
+                    "return_full_text": False
+                }
             }
             
-            with httpx.Client(timeout=30.0) as client:
-                response = client.post(self.groq_url, json=payload, headers=headers)
+            with httpx.Client(timeout=60.0) as client:
+                response = client.post(self.api_url, json=payload, headers=headers)
                 response.raise_for_status()
                 result = response.json()
-                return result["choices"][0]["message"]["content"]
+                
+                # Extract generated text
+                if isinstance(result, list) and len(result) > 0:
+                    generated_text = result[0].get("generated_text", "")
+                    return generated_text.strip()
+                else:
+                    return self._rule_based_response(query)
         
         except Exception as e:
-            print(f"[{self._id}] Error calling Groq API: {e}")
+            print(f"[{self._id}] Error calling HuggingFace API: {e}")
             return self._rule_based_response(query)
     
     def _rule_based_response(self, query: str) -> str:
