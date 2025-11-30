@@ -41,11 +41,11 @@ class SustainabilityFootprintAgent(AbstractWorkerAgent):
         # Initialize Google Gemini API (FREE - unlimited requests, better than Groq/OpenAI)
         # Get free API key: https://aistudio.google.com/app/apikey
         self.api_key = api_key or os.getenv("GEMINI_API_KEY")
-        self.gemini_url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent"
+        self.gemini_url = "https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent"
         self.use_ai = True if self.api_key else False
         
         if self.api_key:
-            print(f"[{self._id}] Using Google Gemini 1.5 Flash (FREE, unlimited)")
+            print(f"[{self._id}] Using Google Gemini 2.5 Flash (FREE, unlimited)")
         else:
             print(f"[{self._id}] No API key - using rule-based responses. Get free key: https://aistudio.google.com/app/apikey")
         
