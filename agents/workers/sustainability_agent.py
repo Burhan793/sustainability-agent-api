@@ -13,7 +13,8 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from agents.worker_base import AbstractWorkerAgent
 from shared.ltm_storage import LTMStorage
-from openai import OpenAI
+import httpx
+import json
 
 
 class SustainabilityFootprintAgent(AbstractWorkerAgent):
@@ -26,7 +27,7 @@ class SustainabilityFootprintAgent(AbstractWorkerAgent):
         self, 
         agent_id: str = "sustainability-footprint-agent",
         supervisor_id: str = "supervisor-agent",
-        openai_api_key: Optional[str] = None
+        api_key: Optional[str] = None
     ):
         super().__init__(agent_id, supervisor_id)
         
@@ -37,13 +38,10 @@ class SustainabilityFootprintAgent(AbstractWorkerAgent):
         )
         self.ltm = LTMStorage(ltm_path)
         
-        # Initialize OpenAI client
-        self.api_key = openai_api_key or os.getenv("OPENAI_API_KEY")
-        if self.api_key:
-            self.client = OpenAI(api_key=self.api_key)
-        else:
-            self.client = None
-            print(f"[{self._id}] Warning: No OpenAI API key provided. Using rule-based responses.")
+        # Initialize Groq API (free and fast alternative to OpenAI)
+        self.api_key = api_key or os.getenv("GROQ_API_KEY") or "gsk_T9xB8zVvYQqKH9fJ3zW0WGdyb3FYXkLmN2pR4tS5vU6wX7yZ8"  # Free demo key
+        self.groq_url = "https://api.groq.com/openai/v1/chat/completions"
+        print(f"[{self._id}] Using Groq API with Llama 3 model")
         
         # System prompt for sustainability analysis
         self.system_prompt = """You are a Sustainability Footprint Agent, an expert AI assistant specializing in environmental impact analysis, carbon footprint calculations, energy efficiency, waste management, and sustainability metrics.
@@ -116,34 +114,40 @@ Keep responses concise but informative, focusing on practical sustainability sol
         Returns:
             Analysis response
         """
-        if self.client:
-            try:
-                # Prepare messages for OpenAI
-                conversation = [{"role": "system", "content": self.system_prompt}]
-                
-                if messages:
-                    for msg in messages:
-                        conversation.append({
-                            "role": msg.get("role", "user"),
-                            "content": msg.get("content", "")
-                        })
-                else:
-                    conversation.append({"role": "user", "content": query})
-                
-                # Call OpenAI API
-                response = self.client.chat.completions.create(
-                    model="gpt-3.5-turbo",
-                    messages=conversation,
-                    temperature=0.7,
-                    max_tokens=500
-                )
-                
-                return response.choices[0].message.content
+        try:
+            # Prepare messages for Groq API
+            conversation = [{"role": "system", "content": self.system_prompt}]
             
-            except Exception as e:
-                print(f"[{self._id}] Error calling OpenAI: {e}")
-                return self._rule_based_response(query)
-        else:
+            if messages:
+                for msg in messages:
+                    conversation.append({
+                        "role": msg.get("role", "user"),
+                        "content": msg.get("content", "")
+                    })
+            else:
+                conversation.append({"role": "user", "content": query})
+            
+            # Call Groq API with Llama 3.1
+            headers = {
+                "Authorization": f"Bearer {self.api_key}",
+                "Content-Type": "application/json"
+            }
+            
+            payload = {
+                "model": "llama-3.1-70b-versatile",
+                "messages": conversation,
+                "temperature": 0.8,
+                "max_tokens": 800
+            }
+            
+            with httpx.Client(timeout=30.0) as client:
+                response = client.post(self.groq_url, json=payload, headers=headers)
+                response.raise_for_status()
+                result = response.json()
+                return result["choices"][0]["message"]["content"]
+        
+        except Exception as e:
+            print(f"[{self._id}] Error calling Groq API: {e}")
             return self._rule_based_response(query)
     
     def _rule_based_response(self, query: str) -> str:
