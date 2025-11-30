@@ -38,10 +38,16 @@ class SustainabilityFootprintAgent(AbstractWorkerAgent):
         )
         self.ltm = LTMStorage(ltm_path)
         
-        # Initialize AI model API (using free HuggingFace Inference API - no key needed)
-        self.api_url = "https://api-inference.huggingface.co/models/meta-llama/Llama-3.2-3B-Instruct"
-        self.use_ai = True
-        print(f"[{self._id}] Using HuggingFace Llama 3.2 model (free, no API key needed)")
+        # Initialize Google Gemini API (FREE - unlimited requests, better than Groq/OpenAI)
+        # Get free API key: https://aistudio.google.com/app/apikey
+        self.api_key = api_key or os.getenv("GEMINI_API_KEY")
+        self.gemini_url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent"
+        self.use_ai = True if self.api_key else False
+        
+        if self.api_key:
+            print(f"[{self._id}] Using Google Gemini 1.5 Flash (FREE, unlimited)")
+        else:
+            print(f"[{self._id}] No API key - using rule-based responses. Get free key: https://aistudio.google.com/app/apikey")
         
         # System prompt for sustainability analysis
         self.system_prompt = """You are a Sustainability Footprint Agent, an expert AI assistant specializing in environmental impact analysis, carbon footprint calculations, energy efficiency, waste management, and sustainability metrics.
@@ -118,43 +124,48 @@ Keep responses concise but informative, focusing on practical sustainability sol
             return self._rule_based_response(query)
             
         try:
-            # Build prompt with conversation context
-            prompt = f"{self.system_prompt}\n\n"
+            # Build conversation context for Gemini
+            conversation_text = f"{self.system_prompt}\n\n"
             
             if messages:
                 for msg in messages:
                     role = msg.get("role", "user")
                     content = msg.get("content", "")
-                    prompt += f"{role.capitalize()}: {content}\n"
+                    conversation_text += f"{role.capitalize()}: {content}\n"
             
-            prompt += f"User: {query}\nAssistant:"
+            conversation_text += f"\nUser: {query}\nAssistant:"
             
-            # Call HuggingFace Inference API (free, no auth required)
+            # Call Google Gemini API
+            url = f"{self.gemini_url}?key={self.api_key}"
             headers = {"Content-Type": "application/json"}
             payload = {
-                "inputs": prompt,
-                "parameters": {
-                    "max_new_tokens": 500,
-                    "temperature": 0.7,
-                    "top_p": 0.9,
-                    "return_full_text": False
+                "contents": [{
+                    "parts": [{
+                        "text": conversation_text
+                    }]
+                }],
+                "generationConfig": {
+                    "temperature": 0.8,
+                    "maxOutputTokens": 800,
+                    "topP": 0.9
                 }
             }
             
-            with httpx.Client(timeout=60.0) as client:
-                response = client.post(self.api_url, json=payload, headers=headers)
+            with httpx.Client(timeout=30.0) as client:
+                response = client.post(url, json=payload, headers=headers)
                 response.raise_for_status()
                 result = response.json()
                 
-                # Extract generated text
-                if isinstance(result, list) and len(result) > 0:
-                    generated_text = result[0].get("generated_text", "")
-                    return generated_text.strip()
+                # Extract generated text from Gemini response
+                if "candidates" in result and len(result["candidates"]) > 0:
+                    content = result["candidates"][0]["content"]["parts"][0]["text"]
+                    return content.strip()
                 else:
+                    print(f"[{self._id}] Unexpected Gemini response format")
                     return self._rule_based_response(query)
         
         except Exception as e:
-            print(f"[{self._id}] Error calling HuggingFace API: {e}")
+            print(f"[{self._id}] Error calling Gemini API: {e}")
             return self._rule_based_response(query)
     
     def _rule_based_response(self, query: str) -> str:
