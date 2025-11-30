@@ -83,21 +83,21 @@ Keep responses concise but informative, focusing on practical sustainability sol
         if not query:
             raise ValueError("No query provided in task data")
         
-        # Check LTM for cached response
-        cached_response = self.ltm.search_similar(query)
-        if cached_response:
-            print(f"[{self._id}] Found cached response in LTM")
-            return {
-                "message": cached_response,
-                "source": "ltm_cache",
-                "query": query
-            }
+        # LTM caching disabled - always generate fresh responses
+        # cached_response = self.ltm.search_similar(query)
+        # if cached_response:
+        #     print(f"[{self._id}] Found cached response in LTM")
+        #     return {
+        #         "message": cached_response,
+        #         "source": "ltm_cache",
+        #         "query": query
+        #     }
         
         # Generate new response
         response = self._generate_sustainability_analysis(query, messages)
         
-        # Store successful response in LTM
-        self.ltm.store_response(query, response)
+        # Store successful response in LTM (optional - currently disabled)
+        # self.ltm.store_response(query, response)
         
         return {
             "message": response,
